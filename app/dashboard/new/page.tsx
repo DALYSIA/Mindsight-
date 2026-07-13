@@ -13,7 +13,7 @@ export default function NewStudyPage() {
 
   const [title, setTitle] = useState("");
   const [promptMessage, setPromptMessage] = useState(
-    "Hi, this is for a short study and research project. I'd love to hear your honest point of view — it'll only take a minute."
+    "Hi, this is for a short study and research project. I'd love to hear your honest point of view - it'll only take a minute."
   );
   const [csvText, setCsvText] = useState("");
   const [rows, setRows] = useState<{ name: string }[]>([]);
@@ -32,7 +32,7 @@ export default function NewStudyPage() {
           .map((r) => ({ name: (r.name || r.Name || Object.values(r)[0] || "").toString().trim() }))
           .filter((r) => r.name.length > 0);
         setRows(parsed);
-        setCsvText(`${parsed.length} contact(s) loaded from file.`);
+        setCsvText(parsed.length + " contact(s) loaded from file.");
       },
       error: () => setError("Could not read that CSV file."),
     });
@@ -95,13 +95,13 @@ export default function NewStudyPage() {
     }
 
     setLoading(false);
-    router.push(`/dashboard/${study.id}`);
+    router.push("/dashboard/" + study.id);
   }
 
   return (
     <main className="min-h-screen px-6 py-10 max-w-2xl mx-auto">
       <Link href="/dashboard" className="focus-ring text-xs font-mono text-taupe hover:text-ink">
-        ← Back
+        Back
       </Link>
 
       <h1 className="font-display text-2xl font-medium mt-4 mb-8">New study</h1>
@@ -143,8 +143,29 @@ export default function NewStudyPage() {
               <input type="file" accept=".csv" onChange={handleFile} className="text-sm" />
               {csvText && <p className="text-xs text-sage mt-1">{csvText}</p>}
             </div>
-            <p className="text-xs text-taupe text-center">— or —</p>
+            <p className="text-xs text-taupe text-center">or paste below</p>
             <textarea
               placeholder="Paste one name per line"
               rows={4}
-              onChange={(e)
+              onChange={(e) => handlePasteParse(e.target.value)}
+              className="focus-ring w-full border border-line bg-white/60 px-3 py-2 rounded-sm text-sm"
+            />
+          </div>
+          {rows.length > 0 && (
+            <p className="text-xs text-taupe mt-2">{rows.length} contact(s) ready.</p>
+          )}
+        </div>
+
+        {error && <p className="text-sm text-rust">{error}</p>}
+
+        <button
+          type="submit"
+          disabled={loading}
+          className="focus-ring bg-ink text-paper px-5 py-2 rounded-sm text-sm font-medium hover:bg-steel transition-colors disabled:opacity-50"
+        >
+          {loading ? "Creating..." : "Create study & generate links"}
+        </button>
+      </form>
+    </main>
+  );
+}
