@@ -2,10 +2,12 @@
 
 export default function ExportButton({ responses, title }: { responses: any[]; title: string }) {
   function handleExport() {
-    const header = ["name", "response", "submitted_at"];
+    const header = ["name", "response", "tag", "note", "submitted_at"];
     const rows = responses.map((r) => [
       r.contacts?.name ?? "",
       `"${(r.body || "").replace(/"/g, '""')}"`,
+      r.tag ?? "",
+      `"${(r.admin_note || "").replace(/"/g, '""')}"`,
       r.created_at,
     ]);
     const csv = [header.join(","), ...rows.map((r) => r.join(","))].join("\n");
@@ -13,7 +15,7 @@ export default function ExportButton({ responses, title }: { responses: any[]; t
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `${title.replace(/\s+/g, "_")}_responses.csv`;
+    a.download = title.replace(/\s+/g, "_") + "_responses.csv";
     a.click();
     URL.revokeObjectURL(url);
   }
