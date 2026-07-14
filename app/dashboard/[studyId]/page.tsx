@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import LinkRow from "./LinkRow";
 import ExportButton from "./ExportButton";
 import ResponsesList from "./ResponsesList";
+import StudyStats from "./StudyStats";
 
 export default async function StudyPage({ params }: { params: { studyId: string } }) {
   const supabase = createServerSupabase();
@@ -34,7 +35,42 @@ export default async function StudyPage({ params }: { params: { studyId: string 
         Back to all studies
       </Link>
 
-      <div className="mt-4 mb-10">
+      <div className="mt-4 mb-8">
+        <h1 className="font-display text-2xl font-medium">{study.title}</h1>
+        <p className="text-sm text-taupe mt-1 italic">"{study.prompt_message}"</p>
+      </div>
+
+      <StudyStats responses={responses ?? []} totalContacts={contacts?.length ?? 0} />
+
+      <section className="mb-12">
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="font-mono text-xs uppercase tracking-widest text-taupe">
+            Links to send ({contacts?.length ?? 0})
+          </h2>
+        </div>
+        <ul className="divide-y divide-line border-t border-b border-line">
+          {contacts?.map((c: any, i: number) => (
+            <LinkRow key={c.id} index={i} contact={c} />
+          ))}
+          {(!contacts || contacts.length === 0) && (
+            <li className="py-4 text-sm text-taupe">No contacts added.</li>
+          )}
+        </ul>
+      </section>
+
+      <section>
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="font-mono text-xs uppercase tracking-widest text-taupe">
+            Replies ({responses?.length ?? 0})
+          </h2>
+          {responses && responses.length > 0 && <ExportButton responses={responses} title={study.title} />}
+        </div>
+
+        <ResponsesList responses={responses ?? []} />
+      </section>
+    </main>
+  );
+}      <div className="mt-4 mb-10">
         <h1 className="font-display text-2xl font-medium">{study.title}</h1>
         <p className="text-sm text-taupe mt-1 italic">"{study.prompt_message}"</p>
       </div>
